@@ -80,25 +80,35 @@ class Gregorian:
 
         # Convert date to Jalali
         d_4 = year % 4
+        # 每个月份的累计天数
         g_a = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+        # 实际的日期对应的当年的总天数
         doy_g = g_a[month] + day
+        # 如果是公历闰年且月份大于2月，那么就增加一天，不考虑400闰年，因为没人能活到2400年吧
         if d_4 == 0 and month > 2:
             doy_g += 1
+
+        # 伊朗历每2820年一闰，
         d_33 = int(((year - 16) % 132) * .0305)
         a = 286 if (d_33 == 3 or d_33 < (d_4 - 1) or d_4 == 0) else 287
+
         if (d_33 == 1 or d_33 == 2) and (d_33 == d_4 or d_4 == 1):
             b = 78
         else:
             b = 80 if (d_33 == 3 and d_4 == 0) else 79
+
+
         if int((year - 10) / 63) == 30:
             a -= 1
             b += 1
+
         if doy_g > b:
             jy = year - 621
             doy_j = doy_g - b
         else:
             jy = year - 622
             doy_j = doy_g + a
+
         if doy_j < 187:
             jm = int((doy_j - 1) / 31)
             jd = doy_j - (31 * jm)
@@ -158,21 +168,25 @@ class Persian:
             doy_j = ((month - 1) * 31) + day
         else:
             doy_j = ((month - 7) * 30) + day + 186
+
         d_33 = int(((year - 55) % 132) * .0305)
         a = 287 if (d_33 != 3 and d_4 <= d_33) else 286
         if (d_33 == 1 or d_33 == 2) and (d_33 == d_4 or d_4 == 1):
             b = 78
         else:
             b = 80 if (d_33 == 3 and d_4 == 0) else 79
+
         if int((year - 19) / 63) == 20:
             a -= 1
             b += 1
+
         if doy_j <= a:
             gy = year + 621
             gd = doy_j + b
         else:
             gy = year + 622
             gd = doy_j - a
+            
         for gm, v in enumerate([0, 31, 29 if (gy % 4 == 0) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]):
             if gd <= v:
                 break
